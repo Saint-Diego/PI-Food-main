@@ -18,7 +18,6 @@ const recipeSlice = createSlice({
       state.copyRecipes = state.recipes = payload
     },
     getRecipe: (state, {payload}) => {
-      state.recipes = [payload]
       state.recipe = payload
     },
     getDiets: (state, {payload}) => {
@@ -66,11 +65,12 @@ export const recipeSelector = state => state;
 
 export default recipeSlice.reducer;
 
-const URL = 'http://localhost:3001/api/recipes'
+const URL_RECIPE = 'http://localhost:3001/api/recipes'
+const URL_DIETS = 'http://localhost:3001/api/diets'
 
 export const fetchRecipes = () => async dispatch => {
   try {
-    const {data} = await axios(`${URL}/all`);
+    const {data} = await axios(URL_RECIPE);
     dispatch(getRecipes(data));
   } catch (e) {
     showAlert('Opps!', e, 'error');
@@ -102,11 +102,22 @@ export const fetchOrderRecipes = (recipes, {option, sort}) => dispatch => {
   }
 };
 
-export const fetchRecipe = (id, name) => async dispatch => {
+export const fetchRecipeById = (id) => async dispatch => {
   try {
-    const response = await axios((id) ? `${URL}/${id}` : `${URL}?name=${name}`);
+    const response = await axios(`${URL_RECIPE}/${id}`);
     if (response.status === 200) {
       dispatch(getRecipe(response.data));
+    } else throw new TypeError(response.data);
+  } catch (e) {
+    return showAlert('Opps!', e.message, 'error');
+  }
+};
+
+export const fetchRecipesByName = (name) => async dispatch => {
+  try {
+    const response = await axios(`${URL_RECIPE}?name=${name}`);
+    if (response.status === 200) {
+      dispatch(getRecipes(response.data));
     } else throw new TypeError('algo malió sal');
   } catch (e) {
     return showAlert('Opps!', e.message, 'error');
@@ -115,7 +126,7 @@ export const fetchRecipe = (id, name) => async dispatch => {
 
 export const fetchCreateRecipe = (recipe) => async () => {
   try {
-    const response = await axios.post(URL, recipe);
+    const response = await axios.post(URL_RECIPE, recipe);
     if (response.status === 201) {
       return showAlert(response.data, '', 'success');
     }
@@ -127,7 +138,7 @@ export const fetchCreateRecipe = (recipe) => async () => {
 
 export const fetchDiets = () => async dispatch => {
   try {
-    const {data} = await axios('http://localhost:3001/api/diets');
+    const {data} = await axios(URL_DIETS);
     dispatch(getDiets(data));
   } catch (e) {
     return showAlert('Opps!', e, 'error')

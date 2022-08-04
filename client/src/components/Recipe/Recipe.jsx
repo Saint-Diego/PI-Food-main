@@ -13,7 +13,7 @@ const Recipe = ({id, image, name, healthScore, diets}) => {
           diets?.map((diet) => <li>{diet}</li>)
         }
       </ul>
-      <Link to={`/home/recipes/${id}`}>
+      <Link to={`/recipe/${id}`}>
         <button>Ver mas</button>
       </Link>
     </div>

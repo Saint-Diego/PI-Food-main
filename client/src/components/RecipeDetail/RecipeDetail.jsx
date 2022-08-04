@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { fetchRecipe, recipeSelector } from '../../slices/index';
+import { fetchRecipeById, recipeSelector } from '../../slices/index';
 
 const RecipeDetail = () => {
   const { idRecipe } = useParams();
@@ -9,7 +9,7 @@ const RecipeDetail = () => {
   const { recipe } = useSelector(recipeSelector);
 
   useEffect(() => {
-    dispatch(fetchRecipe(idRecipe));
+    dispatch(fetchRecipeById(idRecipe));
   },[idRecipe, dispatch]);
 
   return (
@@ -37,9 +37,7 @@ const RecipeDetail = () => {
           <h5>Paso a paso:</h5>
           <ol>
             {
-              recipe.steps?.map(({number, step}) => {
-                <li key={number}>{step}</li>
-              })
+              recipe.steps?.map(({number, step}) => <li key={number}>{step}</li>)
             }
           </ol>
         </>

@@ -31,7 +31,8 @@ const OrderFilter = () => {
     <div className="filters">
       <div className="sort">
         <span>Ordenar por:</span>
-        <select name="option" id="option" placeholder='Select...' onChange={handleChangeOption}>
+        <select name="option" id="option" onChange={handleChangeOption}>
+          <option value="">-Seleecione una opción-</option>
           <option value="a-z">A-Z</option>
           <option value="health score">Health Score</option>
         </select>

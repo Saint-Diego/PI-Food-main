@@ -12,7 +12,7 @@ const Side = () => {
 
   const handleClickCreate = (e) => {
     e.preventDefault();
-    history.push('/home/recipes/create')
+    history.push('/recipes/create')
   };
 
   const handleClick = (e) => {
@@ -22,7 +22,7 @@ const Side = () => {
 
   return (
     <div>
-      <NavLink to='/home/recipes/create'>
+      <NavLink to='/recipes/create'>
         <button>Crear nueva receta</button>
       </NavLink>
       {/* <button onClick={handleClickCreate}>Crear nueva receta</button> */}

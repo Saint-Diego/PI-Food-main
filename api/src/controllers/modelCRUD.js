@@ -6,10 +6,18 @@ class ModelCRUD {
   }; 
 
   getAll = async (req, res, next) => {
+    const name = (req.query) && req.query.name;
+    const condition = {
+      where: {
+        name: {
+          [Op.iLike]: `%${name}%`
+        }
+      }
+    };
     try {
-      let data = [];
+      let data = null;
       if (this.model !== Diet) {
-        const dbRecipes = await this.model.findAll();
+        const dbRecipes = (!name) ? await this.model.findAll() :  await this.model.findAll(condition);
         const promise = await dbRecipes?.map(async (r) => await this.setDiets(r));
         data = await Promise.all(promise);
       } else data = await this.model.findAll();
@@ -34,13 +42,7 @@ class ModelCRUD {
   getByName = async (req, res, next) => {
     let name = (req.query) ? req.query.name : req.params.name;
     try {
-      const result = await this.model.findOne({
-        where: {
-          name: {
-            [Op.like]: `%${name}%`
-          }
-        }
-      });
+      const result = await this.model.finOne({where: {name}});
       if (!result) res.status(404).send('Recipe not found!');
       res.send(await this.setDiets(result));
     } catch (error) {

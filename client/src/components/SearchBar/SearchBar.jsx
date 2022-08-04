@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { fetchRecipe } from '../../slices/index';
+import { fetchRecipesByName } from '../../slices/index';
 
 const SearchBar = () => {
   const [name, setName] = useState("");
@@ -13,7 +13,7 @@ const SearchBar = () => {
 
   const handleClick = (e) => {
     e.preventDefault();
-    dispatch(fetchRecipe(null, name));
+    dispatch(fetchRecipesByName(name));
     setName("");
     refInput.current.focus();
   };

@@ -27,7 +27,7 @@ const recipeController = require('./src/controllers/recipes')
 conn.sync({ force: true }).then(() => {
   server.listen(port, () => {
     dietController.loadDiets();
-    // recipeController.downloadRecipes();
+    recipeController.downloadRecipes();
     console.log(`Server listening at ${port}`); // eslint-disable-line no-console
   });
 });

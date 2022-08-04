@@ -3,8 +3,8 @@ const recipeController = require('../controllers/recipes');
 
 const router = Router();
 
-router.get('/all', recipeController.getAll);
-router.get('/', recipeController.getByName);
+router.get('/', recipeController.getAll);
+// router.get('/', recipeController.getByName);
 router.get('/:idRecipe', recipeController.getById);
 router.post('/', recipeController.addOne);
 

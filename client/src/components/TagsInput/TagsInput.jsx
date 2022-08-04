@@ -17,7 +17,7 @@ const TagsInput = () => {
 
   const handleChange = (e) => {
     let selected = e.target.value;
-    if (tags.includes(selected)) return;
+    if (tags.includes(selected) || selected) return;
     setTags([...tags, selected]);
   };
 
@@ -29,7 +29,8 @@ const TagsInput = () => {
     <div className="filters">
       <div className="sort">
         <label htmlFor="diets">Filtrar por:</label>
-        <select name="diets" id="diets" placeholder='Select...' onChange={handleChange}>
+        <select name="diets" id="diets" onChange={handleChange}>
+          <option value="">-Seleccione un item-</option>
           {
             diets.map(({id, name}) => <option key={id} value={name}>{name}</option>)
           }

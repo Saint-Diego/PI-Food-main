@@ -8,5 +8,5 @@ module.exports = {
   dbHost: process.env.DB_HOST || 'localhost',
   dbPort: process.env.DB_PORT || 5432,
   dbName: process.env.DB_NAME || 'food',
-  apiKey: process.env.API_KEY || '0fdbee1aacf94f01b3e3f3c42ed661c4',
+  apiKey: process.env.API_KEY || 'de96b512a37d48bc8e47272a56c77b24',
 }
