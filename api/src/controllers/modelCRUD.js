@@ -21,8 +21,7 @@ class ModelCRUD {
         const promise = await dbRecipes?.map(async (r) => await this.setDiets(r));
         data = await Promise.all(promise);
       } else data = await this.model.findAll();
-      if (data.length) res.send(data);
-      else res.status(404).send('Recipes not found!');
+      res.send(data.length ? data : []);
     } catch (error) {
       next(error);
     }
@@ -50,7 +49,7 @@ class ModelCRUD {
     }
   };
 
-  addOne = async (req, res, next) => {
+  create = async (req, res, next) => {
     try {
       const created = await this.model.create(req.body);
       if (!created) res.send(`The ${req.body.name} recipe already exist`);

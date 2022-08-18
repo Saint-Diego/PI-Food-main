@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchFilterRecipesByDiets, fetchDiets, recipeSelector } from '../../slices/index';
+import Tag from './Tag/Tag';
 
 const TagsInput = () => {
-  const [tags, setTags] = useState([]);
   const {recipes, diets} = useSelector(recipeSelector);
+  const [selected, setSelected] = useState('');
+  const [tags, setTags] = useState([]);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -12,13 +14,17 @@ const TagsInput = () => {
   }, [dispatch]);
 
   useEffect(() => {
+    if (tags.length === 0) setSelected('');
     dispatch(fetchFilterRecipesByDiets(recipes, tags));
   }, [tags, dispatch]);
 
+  useEffect(() => {
+    if (tags.includes(selected) || !selected) return;
+    setTags(prevTags => [...prevTags, selected]);
+  }, [selected]);
+
   const handleChange = (e) => {
-    let selected = e.target.value;
-    if (tags.includes(selected) || selected) return;
-    setTags([...tags, selected]);
+    setSelected(e.target.value);
   };
 
   const removeTag = (tag) => {
@@ -29,22 +35,16 @@ const TagsInput = () => {
     <div className="filters">
       <div className="sort">
         <label htmlFor="diets">Filtrar por:</label>
-        <select name="diets" id="diets" onChange={handleChange}>
-          <option value="">-Seleccione un item-</option>
+        <select name="diets" id="diets" value={selected} defaultValue="" onChange={handleChange}>
+          <option hidden value="">-Seleccione un item-</option>
           {
             diets.map(({id, name}) => <option key={id} value={name}>{name}</option>)
           }
         </select>
       </div>
-      {/* <input type="text" className='tags-input' placeholder='Elija un tipo de dieta' onKeyDown={handleKeyDown} /> */}
       <div className='tags-input-container'>
         {
-          tags.map((name, index) => (
-            <div className="tag-item" key={index}>
-              <span className='text'>{name}</span>
-              <span className='close' onClick={() => removeTag(name)}>&times;</span>
-            </div>
-          ))
+          tags.map((name, index) => <Tag key={index} name={name} onClick={removeTag} />)
         }
       </div>
     </div>

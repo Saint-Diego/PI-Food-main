@@ -4,7 +4,7 @@ import Side from '../Side/Side';
 
 const Home = () => {
   return (
-    <div>
+    <div className="container">
       <Side/>
       <Recipes/>
     </div>

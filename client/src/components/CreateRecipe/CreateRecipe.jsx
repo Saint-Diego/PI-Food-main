@@ -2,34 +2,42 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { fetchCreateRecipe, recipeSelector } from '../../slices/index';
+import Tag from '../TagsInput/Tag/Tag';
 
 const newRecipe = {
   name: '',
   summary: '',
   healthScore: 1,
-  image: '',
   steps: [],
+  image: '',
+  dishType: [],
   diets: [],
 };
 
 const CreateRecipe = () => {
-  const [recipe, setRecipe] = useState(newRecipe);
-  const [count, setCount] = useState(0);
+  const [counter, setCounter] = useState({count: 1, index: 0});
+  const [dish, setDish] = useState('');
+  const [dishs, setDishs] = useState([]);
+  const [edit, setEdit] = useState(false);
   const [instructions, setInstructions] = useState([]);
+  const [recipe, setRecipe] = useState(newRecipe);
+  const [selected, setSelected] = useState('');
   const [tags, setTags] = useState([]);
+  const [valueStep, setValueStep] = useState('');
   const history = useHistory();
   const refName = useRef(null);
-  const refStep = useRef(null);
   const {diets: typeDiets} = useSelector(recipeSelector);
   const dispatch = useDispatch();
 
   useEffect(() => {
     if (!typeDiets.length) history.push("/home");
-  },[]);
+  }, []);
 
   useEffect(() => {
+    if (tags.includes(selected) || !selected) return;
+    setTags(prevTags => [...prevTags, selected]);
     setRecipe(prevRecipe => ({...prevRecipe, diets: tags}));
-  }, [tags]);
+  }, [selected]);
 
   const handleChangeInput = (e) => {
     let name = e.target.name;
@@ -37,30 +45,62 @@ const CreateRecipe = () => {
     setRecipe(prevRecipe => ({...prevRecipe, [name]: value}));
   };
 
-  const handleChangeSelect = (e) => {
-    let value = e.target.value;
-    if (tags.includes(value) || value) return;
-    setTags([...tags, value]);
+  const handleChangeDish = (e) => {
+    setDish(e.target.value);
   };
 
-  const handleClickAdd = () => {
-    let value = refStep.current.value;
-    setCount(prevCount => prevCount + 1);
-    setInstructions(prevInstructions => [...prevInstructions, {number: count, step: value}]);
+  const handleChangeStep = (e) => {
+    setValueStep(e.target.value);
+  }
+
+  const handleChangeSelect = (e) => {
+    setSelected(e.target.value);
+  };
+
+  const handleClickAdd = (e) => {
+    e.preventDefault();
+    if (!valueStep) return;
+    if (edit) {
+      instructions[counter.index].step = valueStep;
+      setInstructions(instructions);
+      setEdit(false);
+    } else {
+      setInstructions(prevInstructions => [...prevInstructions, {number: counter.count, step: valueStep}]);
+      setCounter(prevCounter => ({...prevCounter, count: (prevCounter.count + 1)}));
+    }
     setRecipe(prevRecipe => ({...prevRecipe, steps: instructions}));
-    value = "";
+    setValueStep("");
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key !== 'Enter') return;
+    setDishs(prevDishs => [...prevDishs, e.target.value]);
+    setDish('');
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     dispatch(fetchCreateRecipe(recipe));
+    resetForm();
+  };
+
+  const resetForm = () => {
     setRecipe(newRecipe);
+    setCounter({count: 0, index: 0});
+    setInstructions([]);
+    setSelected('');
+    setDish('');
+    setDishs([]);
+    setTags([]);
+    setEdit(false);
     refName.current.focus();
   };
 
   const searchStep = (index) => {
     const result = instructions.find((s, i) => i === index);
-    refStep.current.value = result.step;
+    setValueStep(result.step);
+    setCounter(prevCounter => ({...prevCounter, index}));
+    setEdit(true);
   };
 
   const removeStep = (index) => {
@@ -69,6 +109,10 @@ const CreateRecipe = () => {
 
   const removeTag = (tag) => {
     setTags(tags.filter((t) => t !== tag));
+  };
+
+  const removeDish = (dish) => {
+    setDishs(dishs.filter((d) => d !== dish));
   };
 
   return (
@@ -107,19 +151,20 @@ const CreateRecipe = () => {
           <div>
             <label htmlFor="steps">Paso a paso:</label>
             <div>
-              <textarea name="steps" 
-                ref={refStep}
+              <textarea name="steps"
                 id="steps" 
                 cols="30" 
                 rows="10"
-                placeholder="Escriba aquí su instrucción..." />
-              <button onClick={handleClickAdd}>Agregar</button>
+                value={valueStep}
+                placeholder="Escriba aquí su instrucción..."
+                onChange={handleChangeStep} />
+              <button onClick={handleClickAdd}>{edit ? "Editar" : "Agregar"}</button>
             </div>
           </div>
           {
             instructions.map(({number}, index) => (
               <div className="tag-item" key={index}>
-                <span className='text' onClick={() => searchStep(index)}>paso #{number}</span>
+                <span className='text-edit' onClick={() => searchStep(index)}>paso #{number}</span>
                 <span className='close' onClick={() => removeStep(index)}>&times;</span>
               </div>
             ))
@@ -135,22 +180,33 @@ const CreateRecipe = () => {
             onChange={handleChangeInput} />
         </div>
         <div className="filters">
+          <label htmlFor="diets">Tipo de plato:</label>
+          <div className='tags-input-container'>
+            {
+              dishs.map((name, index) => <Tag key={index} name={name} onClick={removeDish}/>)
+            }
+            <input type="text" 
+              className='tags-input'
+              value={dish} 
+              placeholder='Ingrese tipo de plato...' 
+              onChange={handleChangeDish}
+              onKeyDown={handleKeyDown} />
+          </div>
+        </div>
+        <div className="filters">
           <label htmlFor="diets">Tipo de dieta:</label>
           <div className='tags-input-container'>
             {
-              tags.map((name, index) => (
-                <div className="tag-item" key={index}>
-                  <span className='text'>{name}</span>
-                  <span className='close' onClick={() => removeTag(name)}>&times;</span>
-                </div>
-              ))
+              tags.map((name, index) => <Tag key={index} name={name} onClick={removeTag}/>)
             }
-            <select name="diets" id="diets" onChange={handleChangeSelect}>
-              <option value="">-Seleccione un item-</option>
-              {
-                typeDiets?.map(({id, name}) => <option key={id} value={name}>{name}</option>)
-              }
-            </select>
+            <div className="sort">
+              <select name="diets" id="diets" value={selected} defaultValue="" onChange={handleChangeSelect}>
+                <option hidden value="">Seleccione un item...</option>
+                {
+                  typeDiets.map(({id, name}) => <option key={id} value={name}>{name}</option>)
+                }
+              </select>
+            </div>
           </div>
         </div>
         <div>

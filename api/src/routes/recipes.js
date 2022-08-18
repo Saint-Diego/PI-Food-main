@@ -6,6 +6,6 @@ const router = Router();
 router.get('/', recipeController.getAll);
 // router.get('/', recipeController.getByName);
 router.get('/:idRecipe', recipeController.getById);
-router.post('/', recipeController.addOne);
+router.post('/', recipeController.create);
 
 module.exports = router;

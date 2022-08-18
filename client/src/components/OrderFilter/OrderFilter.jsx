@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchOrderRecipes, recipeSelector } from '../../slices/index';
 
 const OrderFilter = () => {
+  const [selected, setSelected] = useState('');
   const [sort, setSort] = useState('asc');
   const [option, setOption] = useState('');
   const dispatch = useDispatch();
@@ -23,16 +24,17 @@ const OrderFilter = () => {
   };
   
   const handleChangeOption = (e) => {
-    if (e.target.value === 'default') return;
-    setOption(e.target.value);
+    setSelected(e.target.value);
+    if (!selected) return;
+    setOption(selected);
   };
 
   return (
     <div className="filters">
       <div className="sort">
         <span>Ordenar por:</span>
-        <select name="option" id="option" onChange={handleChangeOption}>
-          <option value="">-Seleecione una opción-</option>
+        <select name="option" id="option" defaultValue="" onChange={handleChangeOption}>
+          <option hidden value="">-Seleccione una opción-</option>
           <option value="a-z">A-Z</option>
           <option value="health score">Health Score</option>
         </select>

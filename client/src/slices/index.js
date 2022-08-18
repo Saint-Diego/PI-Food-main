@@ -73,7 +73,7 @@ export const fetchRecipes = () => async dispatch => {
     const {data} = await axios(URL_RECIPE);
     dispatch(getRecipes(data));
   } catch (e) {
-    showAlert('Opps!', e, 'error');
+    showAlert('Opps!', e.response.data, 'error');
   }
 };
 
@@ -81,7 +81,7 @@ export const fetchFilterRecipesByDiets = (recipes, tags) => dispatch => {
   try {
     dispatch(filterRecipesByDiets({recipes, tags}));
   } catch (e) {
-    showAlert('Opps!', e, 'error');
+    showAlert('Opps!', e.message, 'error');
   }
 };
 
@@ -104,35 +104,28 @@ export const fetchOrderRecipes = (recipes, {option, sort}) => dispatch => {
 
 export const fetchRecipeById = (id) => async dispatch => {
   try {
-    const response = await axios(`${URL_RECIPE}/${id}`);
-    if (response.status === 200) {
-      dispatch(getRecipe(response.data));
-    } else throw new TypeError(response.data);
+    const {data} = await axios(`${URL_RECIPE}/${id}`);
+    dispatch(getRecipe(data));
   } catch (e) {
-    return showAlert('Opps!', e.message, 'error');
+    return showAlert('Opps!', e.response.data, 'error');
   }
 };
 
 export const fetchRecipesByName = (name) => async dispatch => {
   try {
-    const response = await axios(`${URL_RECIPE}?name=${name}`);
-    if (response.status === 200) {
-      dispatch(getRecipes(response.data));
-    } else throw new TypeError('algo malió sal');
+    const {data} = await axios(`${URL_RECIPE}?name=${name}`);
+    dispatch(getRecipes(data));
   } catch (e) {
-    return showAlert('Opps!', e.message, 'error');
+    return showAlert('Opps!', e.response.data, 'error');
   }
 };
 
 export const fetchCreateRecipe = (recipe) => async () => {
   try {
-    const response = await axios.post(URL_RECIPE, recipe);
-    if (response.status === 201) {
-      return showAlert(response.data, '', 'success');
-    }
-    else throw new TypeError(response.data);
+    const {data} = await axios.post(URL_RECIPE, recipe);
+    return showAlert(data, '', 'success');
   } catch (e) {
-    return showAlert('Opps!', e, 'error');
+    return showAlert('Opps!', e.response.data, 'error');
   }
 };
 
